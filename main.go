@@ -43,14 +43,14 @@ func main() {
 		Action: func(ctx context.Context, app *cli.Command) error {
 			fmt.Println("=== REDOVALNICA ===")
 
-			// Read flags
 			min := app.Int("minOcena")
 			max := app.Int("maxOcena")
 
-			// Example usage
+			fmt.Printf("%d %d\n", min, max)
+
 			fmt.Println("Dodajanje ocene:")
 			redovalnica.DodajOceno(studenti, "63210001", 10)
-			redovalnica.DodajOceno(studenti, "63210001", 11) // prevelika
+			redovalnica.DodajOceno(studenti, "63210001", 11)
 
 			fmt.Println()
 			redovalnica.IzpisRedovalnice(studenti)
