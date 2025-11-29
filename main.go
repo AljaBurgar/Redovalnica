@@ -1,31 +1,68 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/AljaBurgar/Redovalnica/redovalnica"
+	"github.com/urfave/cli/v3"
 )
+
+var studenti = map[string]redovalnica.Student{
+	"63210001": {Ime: "Ana", Priimek: "Novak", Ocene: []int{10, 9, 8}},
+	"63210002": {Ime: "Boris", Priimek: "Kralj", Ocene: []int{6, 7, 5, 8, 6, 7, 5, 8}},
+	"63210003": {Ime: "Janez", Priimek: "Novak", Ocene: []int{4, 5, 3}},
+}
 
 func main() {
 
-	studenti["63210001"] = Student{"Ana", "Novak", []int{10, 9, 8}}
-	studenti["63210002"] = Student{"Boris", "Kralj", []int{6, 7, 5, 8, 6, 7, 5, 8}}
-	studenti["63210003"] = Student{"Janez", "Novak", []int{4, 5, 3}}
+	app := &cli.Command{
+		Name:  "redovalnica",
+		Usage: "Upravljanje ocen študentov",
 
-	redovalnica.DodajOceno(studenti, "63210004", 5) //Izpise da studenta s to vpisno stevilko ni na seznamu
-	redovalnica.DodajOceno(studenti, "63210001", 17)
-	fmt.Println(studenti["63210001"]) //Ocena se ni dodala ker ni med 0 in 10
-	redovalnica.DodajOceno(studenti, "63210001", 10)
-	redovalnica.DodajOceno(studenti, "63210001", 9)
-	redovalnica.DodajOceno(studenti, "63210001", 8)
-	fmt.Println(studenti["63210001"]) //Ocene so se dodale
+		Flags: []cli.Flag{
+			&cli.IntFlag{
+				Name:  "stOcena",
+				Usage: "najmanjše število ocen potrebnih za pozitivno oceno",
+				Value: 6,
+			},
+			&cli.IntFlag{
+				Name:  "minOcena",
+				Usage: "najmanjša mogoča ocena",
+				Value: 1,
+			},
+			&cli.IntFlag{
+				Name:  "maxOcena",
+				Usage: "največja mogoča ocena",
+				Value: 10,
+			},
+		},
 
-	fmt.Println()
+		Action: func(ctx context.Context, app *cli.Command) error {
+			fmt.Println("=== REDOVALNICA ===")
 
-	redovalnica.IzpisRedovalnice(studenti)
+			// Read flags
+			min := app.Int("minOcena")
+			max := app.Int("maxOcena")
 
-	fmt.Println()
+			// Example usage
+			fmt.Println("Dodajanje ocene:")
+			redovalnica.DodajOceno(studenti, "63210001", 10)
+			redovalnica.DodajOceno(studenti, "63210001", 11) // prevelika
 
-	redovalnica.IzpisiKoncniUspeh(studenti)
-	//fmt.Println(studenti)
+			fmt.Println()
+			redovalnica.IzpisRedovalnice(studenti)
+
+			fmt.Println()
+			redovalnica.IzpisiKoncniUspeh(studenti)
+
+			return nil
+		},
+	}
+
+	if err := app.Run(context.Background(), os.Args); err != nil {
+		log.Fatal(err)
+	}
 }
