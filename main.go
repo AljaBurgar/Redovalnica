@@ -18,7 +18,7 @@ var studenti = map[string]redovalnica.Student{
 
 func main() {
 
-	app := &cli.Command{
+	cmd := &cli.Command{
 		Name:  "redovalnica",
 		Usage: "Upravljanje ocen študentov",
 
@@ -40,11 +40,11 @@ func main() {
 			},
 		},
 
-		Action: func(ctx context.Context, app *cli.Command) error {
+		Action: func(ctx context.Context, cmd *cli.Command) error {
 			fmt.Println("=== REDOVALNICA ===")
 
-			min := app.Int("minOcena")
-			max := app.Int("maxOcena")
+			min := cmd.Int("minOcena")
+			max := cmd.Int("maxOcena")
 
 			fmt.Printf("%d %d\n", min, max)
 
@@ -62,7 +62,7 @@ func main() {
 		},
 	}
 
-	if err := app.Run(context.Background(), os.Args); err != nil {
+	if err := cmd.Run(context.Background(), os.Args); err != nil {
 		log.Fatal(err)
 	}
 }
